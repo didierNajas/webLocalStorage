@@ -1,27 +1,14 @@
-/**
- * main.js
- * Punto de entrada de la aplicación.
- * Orquesta los módulos: conecta eventos del DOM con la API y el storage,
- * y actualiza la UI con los resultados.
- */
-
-import { fetchPokemon }                                      from "./api.js";
+import { fetchPokemon }                                   from "./api.js";
 import { addFavorito, removeFavorito, clearFavoritos,
-         getFavoritos }                                      from "./storage.js";
+         getFavoritos }                                   from "./storage.js";
 import { dom, showToast, showSearchLoading,
          showSearchResult, hideSearchResult,
-         renderFavoritos, initFavGridEvents }               from "./ui.js";
+         renderFavoritos, initFavGridEvents }             from "./ui.js";
 
-// ─── Estado ───────────────────────────────────────────────────────────────────
-
-/** Pokémon actualmente mostrado en la card de búsqueda. */
 let pokemonActual = null;
-
-// ─── Búsqueda ─────────────────────────────────────────────────────────────────
 
 async function handleSearch() {
   const query = dom.input.value.trim();
-
   if (!query) {
     showToast("Escribe un nombre o número primero", "warning");
     return;
@@ -39,8 +26,6 @@ async function handleSearch() {
   }
 }
 
-// ─── Favoritos ────────────────────────────────────────────────────────────────
-
 function refreshFavoritos() {
   renderFavoritos(getFavoritos());
 }
@@ -56,7 +41,7 @@ function handleSaveFavorito() {
     name:  pokemonActual.name,
     image: pokemonActual.sprites.other["official-artwork"]?.front_default
            || pokemonActual.sprites.front_default,
-    types: pokemonActual.types.map((t) => t.type.name),
+    types: pokemonActual.types.map(t => t.type.name),
   });
 
   if (!added) {
@@ -84,20 +69,14 @@ function handleClearFavoritos() {
   showToast("Todos los favoritos eliminados", "warning");
 }
 
-// ─── Registro de eventos ──────────────────────────────────────────────────────
-
 dom.btnBuscar.addEventListener("click", handleSearch);
-dom.input.addEventListener("keydown", (e) => {
+dom.input.addEventListener("keydown", e => {
   if (e.key === "Enter") handleSearch();
 });
 dom.btnFavoritos.addEventListener("click", handleSaveFavorito);
 dom.btnEliminarTodos.addEventListener("click", handleClearFavoritos);
 
-// ─── Inicialización ───────────────────────────────────────────────────────────
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Registra event delegation del grid UNA sola vez
   initFavGridEvents(handleDeleteFavorito);
-  // Carga favoritos guardados
   refreshFavoritos();
 });
